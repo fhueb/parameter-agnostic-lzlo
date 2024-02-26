@@ -2,19 +2,19 @@
 
 This repository contains the experiments supporting our theoretical findings. See the paper for more details: [ Parameter-Agnostic Optimization under Relaxed Smoothness ]( https://arxiv.org/abs/2311.03252 ).
 
-The repository is based on the language modeling part of [ this repo]( https://github.com/zbh2047/clipping-algorithms/tree/master ), which in turn is based on [ the AWD-LSTM repo ]( https://github.com/manuvn/lpRNN-awd-lstm-lm ).
+The repository is based on the language modeling part of [this repository]( https://github.com/zbh2047/clipping-algorithms ), which in turn is based on [ the AWD-LSTM repository]( https://github.com/manuvn/lpRNN-awd-lstm-lm ).
 
 ## Training
 
 For our considered algorithm (NSGD-M), simply run
 
 ```
-python main_lstm.py --batch_size 20 --data [data_folder] --dropouti 0.4 --dropouth 0.25 --seed 2020 --lr 30 --gamma 7.5 --momentum 0.0 --algo sgd_clip --epochs 250
+python main_lstm.py --data [data_folder] --result_dir result/ --epochs 300 --algo nsgdm --lr 25.0 --lr_decay 0.75 --mom_decay 0.5 --seed 1970
 ```
 
 Here the `[data_folder]` is the data folder containing training set and validation set.
 
-For other algorithms, change `--algo` command.
+For other algorithms, change the `--algo` parameter.
 
 ##  Citation
 

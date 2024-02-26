@@ -5,8 +5,8 @@ from utils import TableLogger, create_result_dir, extract_params_from_folder, co
 
 if __name__ == '__main__':
     # Run commands
-    # python main.py --batch_size 20 --data data/penn --dropouti 0.4
-    #       --dropouth 0.25 --seed 141 --epoch 500 --save PTB.pt
+    # python main_lstm.py --data [data_folder] --result_dir result/ --epochs 300 --algo nsgdm --lr 25.0 --lr_decay 0.75
+    # --mom_decay 0.5 --seed 1970
     args = parse_arguments()
 
     # Set the random seed manually for reproducibility.
