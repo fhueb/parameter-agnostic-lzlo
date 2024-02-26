@@ -2,12 +2,13 @@ from torch.optim import Optimizer
 import torch
 import math
 
-# Note: for all algorithms with momentum prarameter, dampening is 1-momentum
 
+# Note: for all algorithms with momentum prarameter, dampening is 1-momentum
 class AlgorithmBase():
     @staticmethod
     def update(paras, state, group_state, *args, **kwargs):
         raise NotImplementedError
+
 
 class Algorithm(Optimizer):
     """
@@ -31,8 +32,10 @@ class Algorithm(Optimizer):
             self.algo.update(ps, self.state, self.state['group' + str(id)], **group)
         return loss
 
+
 def sum_of_square_grad(grads):
     return sum([p.view(-1).dot(p.view(-1)) for p in grads])
+
 
 def update_momentum(grad, state, momentum):
     if 'momentum_buffer' not in state:
@@ -41,6 +44,7 @@ def update_momentum(grad, state, momentum):
     # buf = mom*buf + (1-mom)*buff
     buf.mul_(momentum).add_(1 - momentum, grad)
     return buf
+
 
 class SGD(AlgorithmBase):
     # g = momentum * g + (1 - momentum) * grad
@@ -52,6 +56,7 @@ class SGD(AlgorithmBase):
             if momentum != 0:
                 d_p = update_momentum(d_p, state[p], momentum)
             p.data.add_(-lr, d_p)
+
 
 class NormalizedSGD(AlgorithmBase):
     # g = momentum * g + (1 - momentum) * grad
@@ -68,6 +73,7 @@ class NormalizedSGD(AlgorithmBase):
         for p, d_p in zip(paras, d_ps):
             p.data.add_(-lr / (sum + eps), d_p)
 
+
 class SGDClip(AlgorithmBase):
     # g = momentum * g + (1 - momentum) * grad
     # x = x - min(lr, gamma / |g|) * g
@@ -80,15 +86,9 @@ class SGDClip(AlgorithmBase):
                 d_p = update_momentum(d_p, state[p], momentum)
             d_ps.append(d_p)
         sum = math.sqrt(sum_of_square_grad(d_ps))
-        clr = 0
-        cnorm = 0
         for p, d_p in zip(paras, d_ps):
-#            if lr <= gamma / sum :
-#                clr += 1
-#            else :
-#                cnorm += 1
             p.data.add_(-min(lr, gamma / sum), d_p)
-        #print('lr: {:3d}, norm: {:3d}'.format(clr, cnorm))
+
 
 class Adagrad(AlgorithmBase):
     # g^2 = g^2 + |grad|^2
@@ -116,10 +116,9 @@ class MixClip(AlgorithmBase):
         sum = math.sqrt(sum_of_square_grad(d_ps))
         sum2 = math.sqrt(sum_of_square_grad([p.grad.data for p in paras]))
         for p, d_p in zip(paras, d_ps):
-#            p.data.add_(-nu * min(lr, gamma / sum), d_p)
-#            p.data.add_(-(1-nu) * min(lr, gamma / sum2), p.grad.data)
             p.data.add_(-lr * nu / (1 + sum / gamma * lr), d_p)
             p.data.add_(-lr * (1 - nu) / (1 + sum2 / gamma * lr), p.grad.data)
+
 
 class MomClip(AlgorithmBase):
     @staticmethod

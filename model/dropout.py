@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
+
 class BackHook(torch.nn.Module):
     def __init__(self, hook):
         super(BackHook, self).__init__()
@@ -60,6 +61,7 @@ class WeightDrop(torch.nn.Module):
         self._setweights()
         return self.module(*self.wdrop(*args))
 
+
 def embedded_dropout(embed, words, dropout=0.1, scale=None):
     if dropout:
         mask = embed.weight.data.new().resize_((embed.weight.size(0), 1)).bernoulli_(1 - dropout).expand_as(embed.weight) / (1 - dropout)
@@ -78,6 +80,7 @@ def embedded_dropout(embed, words, dropout=0.1, scale=None):
         embed.scale_grad_by_freq, embed.sparse
     )
     return X
+
 
 class LockedDropout(nn.Module):
     def __init__(self):

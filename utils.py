@@ -4,8 +4,7 @@ import os
 import shutil
 import csv
 import re
-import matplotlib.pyplot as plt
-from typing import Union, List, Dict, Tuple
+
 
 def random_seed(seed_value):
     np.random.seed(seed_value)
@@ -13,8 +12,7 @@ def random_seed(seed_value):
     os.environ['PYTHONHASHSEED'] = str(seed_value)
     torch.cuda.manual_seed(seed_value)
     torch.cuda.manual_seed_all(seed_value)
-    # torch.backends.cudnn.deterministic = True
-    # torch.backends.cudnn.benchmark = False
+
 
 def get_result_dir(args):
     result_dir = args.result_dir
@@ -64,6 +62,7 @@ def get_result_dir(args):
         result_dir += name + str(value) + '_'
     return result_dir
 
+
 def create_result_dir(args):
     result_dir = get_result_dir(args)
     id = 0
@@ -74,14 +73,18 @@ def create_result_dir(args):
     os.makedirs(result_dir_id)
     return result_dir_id
 
+
 class Logger(object):
     def __init__(self, dir):
         self.fp = open(dir, 'w')
+
     def __del__(self):
         self.fp.close()
+
     def print(self, *args, **kwargs):
         print(*args, file=self.fp, **kwargs)
         print(*args, **kwargs)
+
 
 class TableLogger(object):
     def __init__(self, path, header, keep_training):
@@ -92,8 +95,10 @@ class TableLogger(object):
         if not keep_training:
             self.logger.writerow(header)
         self.header = header
+
     def __del__(self):
         self.fp.close()
+
     def log(self, values):
         write_values = []
         for col in self.header:
@@ -102,25 +107,30 @@ class TableLogger(object):
         self.logger.writerow(write_values)
         self.fp.flush()
 
+
 class AverageMeter(object):
     def __init__(self):
         self.reset()
+
     def reset(self):
         self.val = 0
         self.avg = 0
         self.sum = 0
         self.count = 0
+
     def update(self, val, n=1):
         self.val = val
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
 
+
 def infer_type(value, col_name):
     if col_name == 'epoch':
         return int(value)
     else:
         return float(value)
+
 
 def read_tsv_to_dict(file_path):
     result_dict = {}
@@ -140,6 +150,7 @@ def read_tsv_to_dict(file_path):
                 result_dict[col_name].append(value)
 
     return result_dict
+
 
 def extract_params_from_folder(folder_name):
     params = {}
@@ -162,6 +173,7 @@ def extract_params_from_folder(folder_name):
         params['seed'] = int(seed_match.group(1))
 
     return params
+
 
 # Reads the results from the logged data into python.
 def get_results(algs=None, root_path='./result_50', included_params=None, filter_params=None, filter_values=None):
@@ -201,6 +213,7 @@ def get_results(algs=None, root_path='./result_50', included_params=None, filter
 
     return final_dict
 
+
 # Finds the best performing model over all epochs.
 def find_min_values(log_dict, keys=None):
     keys = ['loss', 'ppl'] if keys is None else keys
@@ -208,6 +221,7 @@ def find_min_values(log_dict, keys=None):
     for key in keys:
         min_values[key] = min(log_dict.get(key, [float('inf')]))
     return min_values
+
 
 # Maps each combination of hyperparameters to the 4 min values
 def create_best_model_dict(results_dict):
@@ -218,6 +232,7 @@ def create_best_model_dict(results_dict):
         best_model_dict[key_tuple] = {'train': train_min_values['loss'],
                                       'test': test_min_values['loss']}
     return best_model_dict
+
 
 # Copies the whole content of from_dir to to_dir
 def copy_contents(src_dir, dest_dir):

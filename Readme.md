@@ -1,7 +1,8 @@
 # Parameter-Agnostic Optimization under Relaxed Smoothness
 
 This repository contains the experiments supporting our theoretical findings. See the paper for more details: [ Parameter-Agnostic Optimization under Relaxed Smoothness ]( https://arxiv.org/abs/2311.03252 ).
-The repository is based on the language modeling part of https://github.com/zbh2047/clipping-algorithms/tree/master, which in turn is based on https://github.com/manuvn/lpRNN-awd-lstm-lm.
+
+The repository is based on the language modeling part of [ this repo]( https://github.com/zbh2047/clipping-algorithms/tree/master ), which in turn is based on [ the AWD-LSTM repo ]( https://github.com/manuvn/lpRNN-awd-lstm-lm ).
 
 ## Training
 

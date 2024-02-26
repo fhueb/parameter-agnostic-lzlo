@@ -5,8 +5,8 @@ import numpy as np
 import torch
 import os
 import hashlib
-import datetime
 from algorithm import SGDClip, MomClip, MixClip, Algorithm, SGD, NormalizedSGD, Adagrad
+
 
 ###############################################################################
 # General Utils
@@ -80,6 +80,7 @@ def parse_arguments():
 
     return args
 
+
 ###############################################################################
 # Data loading code
 ###############################################################################
@@ -88,10 +89,12 @@ def model_save(fn, model, criterion, optimizer):
     with open(fn, 'wb') as f:
         torch.save([model, criterion, optimizer], f)
 
+
 def model_load(fn):
     with open(fn, 'rb') as f:
         model, criterion, optimizer = torch.load(f)
     return model, criterion, optimizer
+
 
 ###############################################################################
 # Make batch
@@ -105,6 +108,7 @@ def repackage_hidden(h):
     else:
         return tuple(repackage_hidden(v) for v in h)
 
+
 def batchify(data, bsz, args):
     # Work out how cleanly we can divide the dataset into bsz parts.
     nbatch = data.size(0) // bsz
@@ -116,11 +120,13 @@ def batchify(data, bsz, args):
         data = data.cuda(args.gpu)
     return data
 
+
 def get_batch(source, i, args, seq_len=None, evaluation=False):
     seq_len = min(seq_len if seq_len else args.bptt, len(source) - 1 - i)
     data = source[i:i+seq_len]
     target = source[i+1:i+1+seq_len].view(-1)
     return data, target
+
 
 ###############################################################################
 # Build the model
@@ -145,6 +151,7 @@ def load_data(args):
     test_data = batchify(corpus.test, test_batch_size, args)
     return train_data, val_data, test_data, eval_batch_size, test_batch_size, corpus
 
+
 def build_optimizer(args, params):
     optimizer = None
     if args.algo == 'sgd':
@@ -162,6 +169,7 @@ def build_optimizer(args, params):
     if args.algo == 'adagrad':
         optimizer = Algorithm(params, Adagrad, lr=args.lr, wd=args.wd)
     return optimizer
+
 
 def build_model(args, corpus):
     from model.splitcross import SplitCrossEntropyLoss
@@ -219,6 +227,7 @@ def build_model(args, corpus):
 
     return model, criterion, optimizer
 
+
 def end_of_epoch_print(val_loss, epoch_start_time, epoch):
     print('-' * 89)
     try:
@@ -230,6 +239,7 @@ def end_of_epoch_print(val_loss, epoch_start_time, epoch):
               'valid ppl Inf | valid bpc {:8.3f}'.format(
             epoch, (time.time() - epoch_start_time), val_loss, val_loss / math.log(2)))
     print('-' * 89)
+
 
 ###############################################################################
 # Training code
@@ -252,6 +262,7 @@ def evaluate(data_source, test_logger, batch_size, args, epoch, model, criterion
         except OverflowError:
             test_logger.log({'epoch': epoch, 'loss': ret, 'ppl': 'Inf'})
     return ret
+
 
 def train(train_logger, iter, args, train_data, lr_lambda, mom_lambda, epoch, model, criterion, optimizer):
     # Turn on training mode which enables dropout.

@@ -1,11 +1,3 @@
-import argparse
-import time
-import math
-import numpy as np
-import torch
-import os
-import hashlib
-import datetime
 from utils_lstm import *
 from rerun import load_prev_model, find_matching_folder
 from utils import TableLogger, create_result_dir, extract_params_from_folder, copy_contents
@@ -52,8 +44,8 @@ if __name__ == '__main__':
     train_logger = TableLogger(os.path.join(result_dir, 'train.log'), ['epoch', 'loss', 'ppl'], keep_training)
     test_logger = TableLogger(os.path.join(result_dir, 'test.log'), ['epoch', 'loss', 'ppl'], keep_training)
 
-    # Hacky-ish Solution to introduce decaying stepsizes
-    # Schedulers sadly only work for the lr, not for momentum
+    # Hacky-ish Solution to introduce decaying stepsizes.
+    # Schedulers sadly only work for the lr, not for momentum.
     lr_lambda = lambda t: pow(t, -args.lr_decay) * args.lr
     mom_lambda = lambda t: 1 - pow(t, -args.mom_decay)
 

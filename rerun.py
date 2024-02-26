@@ -1,11 +1,10 @@
 import os
-import re
 import math
 from utils import extract_params_from_folder
-from utils_lstm import model_load, build_optimizer
-from algorithm import SGDClip, MomClip, MixClip, Algorithm, SGD, NormalizedSGD, Adagrad
+from utils_lstm import model_load
+from algorithm import SGDClip, MomClip, MixClip, SGD, NormalizedSGD, Adagrad
 import torch
-import numpy as np
+
 
 def find_matching_folder(results_path, alg_name, target_params):
     # Iterate through alg directories
@@ -22,12 +21,14 @@ def find_matching_folder(results_path, alg_name, target_params):
 
     return None  # Return None if no matching folder is found
 
+
 def calc_iter(eta, etat, lr_decay):
     # etat = eta * iter^(-lr_decay)
     # => iter = (etat / eta)^(-1/lr_decay)
     factor = etat/eta
     t = round(math.pow(factor, -1/lr_decay))
     return t + 1
+
 
 # Since the AlgorithmBase are custom, they are not saved correctly and need to be set again.
 # All the relevant states are set correctly however.
@@ -58,6 +59,7 @@ def load_prev_optimizer(args, optimizer):
     # iter is considered seperately due to my hacky solution. FeelsBadMan
     return iter
 
+
 # Moves all the tensors of the loaded model to the correct gpu
 def move_to_gpu(args, model, criterion, optimizer):
     model = model.cuda(args.gpu)
@@ -76,6 +78,7 @@ def move_to_gpu(args, model, criterion, optimizer):
             # print(f'{k}: {v}')
             if isinstance(v, torch.Tensor):
                 group_state[k] = v.cuda(args.gpu)
+
 
 def load_prev_model(args, model_folder):
     # Loading the previous model. Assumes that args.save is already updated to the model that should be loaded.
